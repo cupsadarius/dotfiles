@@ -11,7 +11,7 @@ theme = Catppuccin Mocha
 window-decoration = false
 window-padding-x = 10
 window-padding-y = 2
-background-opacity = 0.7
+background-opacity = 0.6
 background-blur-radius = 40
 
 auto-update-channel = tip
