@@ -66,10 +66,24 @@ That's it! The script will:
 Switch themes across all applications with one command:
 
 ```bash
-make theme THEME=catppuccin    # Cozy pastel theme
-make theme THEME=rose-pine     # Low-contrast theme
-make theme THEME=gruvbox       # Retro warm colors
+# Dark themes (default)
+make theme THEME=catppuccin                    # Catppuccin Mocha
+make theme THEME=rose-pine                     # Rose Pine Moon
+make theme THEME=gruvbox                       # Gruvbox Dark
+make theme THEME=cyberdream                    # Cyberdream
+
+# Light themes
+make theme THEME=catppuccin VARIANT=light      # Catppuccin Latte
+make theme THEME=rose-pine VARIANT=light       # Rose Pine Dawn
+make theme THEME=gruvbox VARIANT=light         # Gruvbox Light
+make theme THEME=cyberdream VARIANT=light      # Cyberdream Light
+
+# Or use the script directly
+~/.dotfiles/scripts/switch-theme.sh catppuccin light
+~/.dotfiles/scripts/switch-theme.sh gruvbox dark
 ```
+
+The theme switcher updates: Ghostty, Fish, Tmux, Neovim, Starship, FZF, and Bat.
 
 See [themes/README.md](themes/README.md) for more details on adding custom themes.
 
@@ -82,7 +96,7 @@ make update       # Update all plugins and submodules
 make backup       # Backup current configurations
 make restore      # Restore from latest backup
 make uninstall    # Remove symlinks
-make theme        # Switch theme (THEME=catppuccin|rose-pine|gruvbox)
+make theme        # Switch theme (THEME=catppuccin|rose-pine|gruvbox|cyberdream VARIANT=dark|light)
 make check        # Verify installation health
 ```
 

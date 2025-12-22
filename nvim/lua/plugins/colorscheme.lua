@@ -12,7 +12,7 @@ return {
         dark_variant = "moon",
       })
 
-      -- vim.cmd("colorscheme rose-pine")
+      vim.cmd("colorscheme rose-pine")
     end,
   },
   {
@@ -21,7 +21,7 @@ return {
     -- priority = 1000,
     config = function()
       require("catppuccin").setup({
-        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        flavour = "latte", -- latte, frappe, macchiato, mocha
         transparent_background = true, -- disables setting the background color.)
         integrations = {
           blink_cmp = true,
@@ -74,9 +74,10 @@ return {
     "scottmckendry/cyberdream.nvim",
     config = function()
       require("cyberdream").setup({
+        variant = "light",
         transparent = true,
       })
-      vim.cmd("colorscheme cyberdream")
+      -- vim.cmd("colorscheme cyberdream")
     end,
   },
 }

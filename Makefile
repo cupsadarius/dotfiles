@@ -1,7 +1,8 @@
 .PHONY: help install update backup restore uninstall theme check
 
-# Default theme
+# Default theme and variant
 THEME ?= catppuccin
+VARIANT ?= dark
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -101,12 +102,12 @@ uninstall: ## Remove all symlinks and restore backups
 	@echo ""
 	@echo "To restore your previous configs, run: make restore"
 
-theme: ## Switch theme (Usage: make theme THEME=catppuccin|rose-pine|gruvbox)
+theme: ## Switch theme (Usage: make theme THEME=catppuccin VARIANT=dark|light)
 	@if [ ! -f "scripts/switch-theme.sh" ]; then \
 		echo "✗ Theme switcher not found. Please ensure scripts/switch-theme.sh exists"; \
 		exit 1; \
 	fi
-	@bash scripts/switch-theme.sh $(THEME)
+	@bash scripts/switch-theme.sh $(THEME) $(VARIANT)
 
 check: ## Verify installation health
 	@echo "Checking dotfiles installation..."

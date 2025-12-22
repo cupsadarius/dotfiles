@@ -1,0 +1,30 @@
+# name: 'Gruvbox Light'
+# url: 'https://github.com/morhetz/gruvbox'
+# preferred_background: fbf1c7
+
+fish_color_normal 3c3836
+fish_color_command 076678
+fish_color_param 504945
+fish_color_keyword 9d0006
+fish_color_quote 79740e
+fish_color_redirection 8f3f71
+fish_color_end af3a03
+fish_color_comment 928374
+fish_color_error 9d0006
+fish_color_gray 928374
+fish_color_selection --background=ebdbb2
+fish_color_search_match --background=ebdbb2
+fish_color_option 79740e
+fish_color_operator 8f3f71
+fish_color_escape 9d0006
+fish_color_autosuggestion 928374
+fish_color_cancel 9d0006
+fish_color_cwd b57614
+fish_color_user 427b58
+fish_color_host 076678
+fish_color_host_remote 79740e
+fish_color_status 9d0006
+fish_pager_color_progress 928374
+fish_pager_color_prefix 8f3f71
+fish_pager_color_completion 3c3836
+fish_pager_color_description 928374
