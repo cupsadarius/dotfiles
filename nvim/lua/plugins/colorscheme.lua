@@ -53,7 +53,7 @@ return {
           -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
         },
       })
-      vim.cmd("colorscheme catppuccin")
+      -- vim.cmd("colorscheme catppuccin")
     end,
   },
   {
@@ -66,7 +66,7 @@ return {
           transparent_mode = true,
         },
       })
-      -- vim.cmd("colorscheme gruvbox")
+      vim.cmd("colorscheme gruvbox")
       vim.api.nvim_set_hl(0, "Normal", { guibg = NONE, ctermbg = NONE })
     end,
   },

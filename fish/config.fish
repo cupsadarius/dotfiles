@@ -51,7 +51,7 @@ export PATH="$PATH:/usr/sbin"
 export PATH="$PATH:/sbin"
 export PATH="$PATH:/opt/homebrew/bin"
 
-export BAT_THEME="Catppuccin Mocha"
+export BAT_THEME="gruvbox-dark"
 export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
 export K9SCONFIG="$HOME/.config/k9s"
 export K9S_CONFIG_PATH="$HOME/.config/k9s"
@@ -60,6 +60,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.local/bin"
 export EDITOR="nvim"
 
 # fish_config theme choose "Rose Pine Moon"
@@ -86,3 +87,4 @@ end
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+
