@@ -9,6 +9,8 @@ function set_fzf_theme
             set theme rose-pine
         case gruvbox gruvbox-dark gruvbox_dark
             set theme gruvbox
+        case cyberdream cyber
+            set theme cyberdream
     end
 
     # Set FZF colors based on theme
@@ -37,6 +39,14 @@ function set_fzf_theme
 --color=marker:#8ec07c,fg+:#ebdbb2,prompt:#fabd2f,hl+:#83a598 \
 --color=selected-bg:#3c3836 \
 --color=border:#1d2021,label:#fabd2f"
+
+        case cyberdream
+            # Cyberdream
+            set -Ux FZF_DEFAULT_OPTS "\
+--color=fg:#ffffff,header:#5ea1ff,info:#ffbd5e,pointer:#ff5ea0 \
+--color=marker:#5eff6c,fg+:#ffffff,prompt:#bd5eff,hl+:#5ef1ff \
+--color=selected-bg:#3c4048 \
+--color=border:#3c4048,label:#ffffff"
 
         case '*'
             # Default to catppuccin if unknown theme

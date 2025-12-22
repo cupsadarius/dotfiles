@@ -66,8 +66,17 @@ return {
           transparent_mode = true,
         },
       })
-      vim.cmd("colorscheme gruvbox")
+      -- vim.cmd("colorscheme gruvbox")
       vim.api.nvim_set_hl(0, "Normal", { guibg = NONE, ctermbg = NONE })
+    end,
+  },
+  {
+    "scottmckendry/cyberdream.nvim",
+    config = function()
+      require("cyberdream").setup({
+        transparent = true,
+      })
+      vim.cmd("colorscheme cyberdream")
     end,
   },
 }

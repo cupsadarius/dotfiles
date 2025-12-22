@@ -36,9 +36,12 @@ normalize_theme() {
         gruvbox|gruvbox-dark|gruvbox_dark)
             echo "gruvbox"
             ;;
+        cyberdream|cyber)
+            echo "cyberdream"
+            ;;
         *)
             print_error "Unknown theme: $1"
-            echo "Available themes: catppuccin, rose-pine, gruvbox"
+            echo "Available themes: catppuccin, rose-pine, gruvbox, cyberdream"
             exit 1
             ;;
     esac
@@ -56,6 +59,9 @@ update_fish_theme() {
             ;;
         gruvbox)
             theme_file="Gruvbox Dark"
+            ;;
+        cyberdream)
+            theme_file="cyberdream"
             ;;
     esac
 
@@ -80,6 +86,9 @@ update_ghostty_theme() {
         gruvbox)
             theme_conf="Gruvbox Dark Hard"
             ;;
+        cyberdream)
+            theme_conf="cyberdream"
+            ;;
     esac
 
     if [[ -f "$CONFIG_DIR/ghostty/config" ]]; then
@@ -87,52 +96,6 @@ update_ghostty_theme() {
         rm -f "$CONFIG_DIR/ghostty/config.bak"
         print_success "Ghostty theme updated to $theme_conf"
     fi
-}
-
-# Update Alacritty theme (fallback terminal)
-update_alacritty_theme() {
-    local theme_file
-    case "$THEME" in
-        catppuccin)
-            theme_file="catppuccin-mocha.toml"
-            ;;
-        rose-pine)
-            theme_file="rose-pine-moon.toml"
-            ;;
-        gruvbox)
-            # Use catppuccin as fallback if gruvbox not available
-            theme_file="catppuccin-mocha.toml"
-            ;;
-    esac
-
-    if [[ -f "$CONFIG_DIR/alacritty/alacritty.toml" ]]; then
-        # Update import line in alacritty.toml
-        sed -i.bak "s|^import = \[.*\]|import = [\"~/.config/alacritty/$theme_file\"]|" "$CONFIG_DIR/alacritty/alacritty.toml"
-        rm -f "$CONFIG_DIR/alacritty/alacritty.toml.bak"
-        print_success "Alacritty theme updated to $theme_file"
-    fi
-}
-
-# Update Kitty theme (fallback terminal)
-update_kitty_theme() {
-    local theme_file
-    case "$THEME" in
-        catppuccin)
-            # Kitty would need catppuccin theme
-            print_info "Kitty theme switching not configured (only has rose-pine-moon)"
-            ;;
-        rose-pine)
-            theme_file="rose-pine-moon.conf"
-            if [[ -f "$CONFIG_DIR/kitty/kitty.conf" ]]; then
-                sed -i.bak "s|^include .*|include ~/.config/kitty/themes/$theme_file|" "$CONFIG_DIR/kitty/kitty.conf"
-                rm -f "$CONFIG_DIR/kitty/kitty.conf.bak"
-                print_success "Kitty theme updated to $theme_file"
-            fi
-            ;;
-        gruvbox)
-            print_info "Kitty theme switching not configured (only has rose-pine-moon)"
-            ;;
-    esac
 }
 
 # Update Tmux theme
@@ -147,6 +110,9 @@ update_tmux_theme() {
             ;;
         gruvbox)
             theme_file="gruvbox.conf"
+            ;;
+        cyberdream)
+            theme_file="cyberdream.conf"
             ;;
     esac
 
@@ -172,6 +138,9 @@ update_bat_theme() {
             ;;
         gruvbox)
             bat_theme="gruvbox-dark"
+            ;;
+        cyberdream)
+            bat_theme="cyberdream"
             ;;
     esac
 
@@ -212,6 +181,9 @@ update_neovim_theme() {
         gruvbox)
             colorscheme="gruvbox"
             ;;
+        cyberdream)
+            colorscheme="cyberdream"
+            ;;
     esac
 
     if [[ ! -f "$colorscheme_file" ]]; then
@@ -234,6 +206,9 @@ update_neovim_theme() {
             ;;
         gruvbox)
             sed -i.bak 's/^[[:space:]]*-- vim\.cmd("colorscheme gruvbox")/      vim.cmd("colorscheme gruvbox")/g' "$colorscheme_file"
+            ;;
+        cyberdream)
+            sed -i.bak 's/^[[:space:]]*-- vim\.cmd("colorscheme cyberdream")/      vim.cmd("colorscheme cyberdream")/g' "$colorscheme_file"
             ;;
     esac
 
@@ -285,8 +260,6 @@ main() {
 
     update_fish_theme
     update_ghostty_theme
-    update_alacritty_theme
-    update_kitty_theme
     update_tmux_theme
     update_bat_theme
     update_starship_theme
