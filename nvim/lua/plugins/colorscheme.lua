@@ -12,7 +12,7 @@ return {
         dark_variant = "moon",
       })
 
-      vim.cmd("colorscheme rose-pine")
+      -- vim.cmd("colorscheme rose-pine")
     end,
   },
   {
@@ -74,10 +74,9 @@ return {
     "scottmckendry/cyberdream.nvim",
     config = function()
       require("cyberdream").setup({
-        variant = "light",
         transparent = true,
       })
-      -- vim.cmd("colorscheme cyberdream")
+      vim.cmd("colorscheme cyberdream")
     end,
   },
 }
