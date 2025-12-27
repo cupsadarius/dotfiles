@@ -1,0 +1,35 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+scan_timeout = 30
+command_timeout = 3600
+add_newline = true
+
+palette = "cyberdream"
+
+[character]
+success_symbol = "[[󰻠](green) ❯](cyan)"
+error_symbol = "[[󰻠](red) ❯](cyan)"
+vimcmd_symbol = "[󰻠 ❮](grey)"
+
+[git_branch]
+style = "bold magenta"
+
+[directory]
+truncation_length = 4
+style = "bold cyan"
+
+[palettes.cyberdream]
+bg = "#16181a"
+bgAlt = "#1e2124"
+bgHighlight = "#3c4048"
+fg = "#ffffff"
+grey = "#7b8496"
+blue = "#5ea1ff"
+green = "#5eff6c"
+cyan = "#5ef1ff"
+red = "#ff6e5e"
+yellow = "#f1ff5e"
+magenta = "#ff5ef1"
+pink = "#ff5ea0"
+orange = "#ffbd5e"
+purple = "#bd5eff"

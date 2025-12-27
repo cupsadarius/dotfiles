@@ -15,7 +15,7 @@ alias llt="eza -1 --icons --tree --git-ignore"
 alias dirs='dirs -v'
 alias cat='bat'
 alias gg='lazygit'
-alias python='python3'
+alias python='python3.14'
 alias simulator='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
 alias scratch='nvim +noswapfile +"set buftype=nofile" +"set bufhidden=hide"'
 alias k='kubectl'
@@ -33,21 +33,25 @@ alias s="fd --type f --strip-cwd-prefix --hidden --follow --exclude .git --exclu
 export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml
 
 export GOPATH=$HOME/Incubator/Go
-export GOROOT="/usr/local/opt/go/libexec"
+export GOROOT="/opt/homebrew/opt/go/libexec"
+# export GOROOT="/usr/local/opt/go/libexec"
 #export GO111MODULE=on
 export PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH="$HOME/.gcloud/bin:$PATH"
+
 export PATH="/usr/local/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
 export CLOUDSDK_PYTHON=python3.12
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 export PATH="$PATH:/usr/sbin"
 export PATH="$PATH:/sbin"
+export PATH="$PATH:/opt/homebrew/bin"
 
-export BAT_THEME="gruvbox-dark"
+export BAT_THEME="Catppuccin Mocha"
 export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
 export K9SCONFIG="$HOME/.config/k9s"
 export K9S_CONFIG_PATH="$HOME/.config/k9s"
@@ -56,6 +60,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.local/bin"
 export EDITOR="nvim"
 
 # fish_config theme choose "Rose Pine Moon"
@@ -67,3 +72,19 @@ set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
 starship init fish | source
 zoxide init fish | source
+
+# Load FZF theme based on saved preference
+if test -f "$HOME/.config/dotfiles-theme"
+    set -l saved_theme (cat "$HOME/.config/dotfiles-theme" 2>/dev/null)
+    if test -n "$saved_theme"
+        set_fzf_theme $saved_theme
+    end
+else
+    # Default theme
+    set_fzf_theme catppuccin
+end
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
+

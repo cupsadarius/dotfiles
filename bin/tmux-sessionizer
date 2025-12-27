@@ -1,33 +1,57 @@
-#!/usr/bin/env bash
+#!/usr/bin/env fish
 
 # Original https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/bin/tmux-sessionizer
-export FZF_DEFAULT_OPTS="
-	--color=fg:#908caa,hl:#ea9a97
-	--color=fg+:#e0def4,bg+:#393552,hl+:#ea9a97
-	--color=border:#44415a,header:#3e8fb0,gutter:#232136
-	--color=spinner:#f6c177,info:#9ccfd8
-	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
+# FZF_DEFAULT_OPTS is automatically available from Fish universal variables
 
-if [[ $# -eq 1 ]]; then
-	selected=$1
+# Config file and default paths
+set config_file "$HOME/.config/tmux-sessionizer/config"
+set default_paths "$HOME" "$HOME/.config" "$HOME/.dotfiles"
+
+# Function to read paths from config
+function read_paths
+    set -l paths
+
+    if test -f "$config_file"
+        while read -l line
+            # Skip empty lines and comments
+            test -z "$line"; and continue
+            string match -q '#*' "$line"; and continue
+            # Expand ~ to $HOME
+            set line (string replace '~' "$HOME" "$line")
+            # Only add if directory exists
+            test -d "$line"; and set -a paths "$line"
+        end < "$config_file"
+    end
+
+    # Use defaults if no valid paths found
+    if test (count $paths) -eq 0
+        set paths $default_paths
+    end
+
+    printf '%s\n' $paths
+end
+
+# Main logic
+if test (count $argv) -eq 1
+    set selected $argv[1]
 else
-	selected=$(find ~ ~/.config/kube ~/Work ~/Work/around25 ~/Work/ebbot ~/Work/optura ~/.dotfiles ~/Incubator ~/Incubator/Devops ~/Incubator/Opensource ~/Incubator/R\&D ~/Incubator/Sandbox -mindepth 1 -maxdepth 1 -type d | fzf)
-fi
+    set selected (find (read_paths) -mindepth 1 -maxdepth 1 -type d 2>/dev/null | fzf)
+end
 
-if [[ -z $selected ]]; then
-	exit 0
-fi
+if test -z "$selected"
+    exit 0
+end
 
-selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
+set selected_name (basename "$selected" | tr . _)
+set tmux_running (pgrep tmux)
 
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-	tmux new-session -s $selected_name -c $selected
-	exit 0
-fi
+if test -z "$TMUX"; and test -z "$tmux_running"
+    tmux new-session -s $selected_name -c $selected
+    exit 0
+end
 
-if ! tmux has-session -t=$selected_name 2>/dev/null; then
-	tmux new-session -ds $selected_name -c $selected
-fi
+if not tmux has-session -t=$selected_name 2>/dev/null
+    tmux new-session -ds $selected_name -c $selected
+end
 
 tmux switch-client -t $selected_name
