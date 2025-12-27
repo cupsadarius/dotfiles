@@ -15,6 +15,11 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 LOCAL_BIN_DIR="$HOME/.local/bin"
 BACKUP_DIR="$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 
+# OS and architecture detection
+OS=""
+ARCH=""
+HOMEBREW_PREFIX=""
+
 # Function to print colored messages
 print_info() {
     echo -e "${BLUE}==>${NC} $1"
@@ -32,27 +37,39 @@ print_error() {
     echo -e "${RED}✗${NC} $1"
 }
 
-# Check if running on macOS
-check_os() {
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        print_error "This script is designed for macOS only"
+# Detect OS and architecture
+detect_platform() {
+    ARCH=$(uname -m)
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        OS="macos"
+        if [[ "$ARCH" == "arm64" ]]; then
+            print_info "Detected macOS (Apple Silicon)"
+            HOMEBREW_PREFIX="/opt/homebrew"
+        else
+            print_info "Detected macOS (Intel)"
+            HOMEBREW_PREFIX="/usr/local"
+        fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if [[ -f /etc/debian_version ]]; then
+            OS="debian"
+            print_info "Detected Debian/Ubuntu Linux ($ARCH)"
+        else
+            print_error "Unsupported Linux distribution. This script supports Debian/Ubuntu."
+            exit 1
+        fi
+    else
+        print_error "Unsupported OS: $OSTYPE"
         exit 1
     fi
 }
 
-# Detect Mac architecture
-detect_arch() {
-    if [[ $(uname -m) == "arm64" ]]; then
-        print_info "Detected Apple Silicon Mac"
-        HOMEBREW_PREFIX="/opt/homebrew"
-    else
-        print_info "Detected Intel Mac"
-        HOMEBREW_PREFIX="/usr/local"
-    fi
-}
-
-# Check and install Homebrew
+# Check and install Homebrew (macOS only)
 install_homebrew() {
+    if [[ "$OS" != "macos" ]]; then
+        return
+    fi
+
     if command -v brew &>/dev/null; then
         print_success "Homebrew already installed"
         return
@@ -71,8 +88,115 @@ install_homebrew() {
     fi
 }
 
-# Install required packages
+# Update apt and install packages (Debian only)
+install_debian_packages() {
+    if [[ "$OS" != "debian" ]]; then
+        return
+    fi
+
+    print_info "Updating apt..."
+    sudo apt update
+
+    local packages=(
+        "fish"
+        "tmux"
+        "neovim"
+        "bat"
+        "fd-find"
+        "ripgrep"
+        "fzf"
+        "git-delta"
+        "zoxide"
+        "golang-go"
+        "python3"
+        "python3-pip"
+        "curl"
+        "git"
+        "build-essential"
+        "luarocks"
+    )
+
+    print_info "Installing packages via apt..."
+    for package in "${packages[@]}"; do
+        if dpkg -l "$package" &>/dev/null; then
+            print_warning "$package already installed"
+        else
+            sudo apt install -y "$package" && print_success "Installed $package"
+        fi
+    done
+
+    # Install starship
+    if command -v starship &>/dev/null; then
+        print_warning "starship already installed"
+    else
+        print_info "Installing starship..."
+        curl -sS https://starship.rs/install.sh | sh -s -- -y
+        print_success "Installed starship"
+    fi
+
+    # Install eza (modern ls replacement)
+    if command -v eza &>/dev/null; then
+        print_warning "eza already installed"
+    else
+        print_info "Installing eza..."
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+        sudo apt update
+        sudo apt install -y eza && print_success "Installed eza"
+    fi
+
+    # Install lazygit
+    if command -v lazygit &>/dev/null; then
+        print_warning "lazygit already installed"
+    else
+        print_info "Installing lazygit..."
+        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+        # Map architecture names for lazygit releases
+        local lazygit_arch="$ARCH"
+        if [[ "$ARCH" == "aarch64" ]]; then
+            lazygit_arch="arm64"
+        fi
+        curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_${lazygit_arch}.tar.gz"
+        tar xf lazygit.tar.gz lazygit
+        sudo install lazygit /usr/local/bin
+        rm lazygit lazygit.tar.gz
+        print_success "Installed lazygit"
+    fi
+
+    # Create symlinks for different binary names on Debian
+    if [[ ! -L /usr/local/bin/bat ]] && command -v batcat &>/dev/null; then
+        sudo ln -sf "$(command -v batcat)" /usr/local/bin/bat
+        print_success "Created bat symlink"
+    fi
+
+    if [[ ! -L /usr/local/bin/fd ]] && command -v fdfind &>/dev/null; then
+        sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
+        print_success "Created fd symlink"
+    fi
+
+    # Install Nerd Font
+    print_info "Installing Hack Nerd Font..."
+    local font_dir="$HOME/.local/share/fonts"
+    mkdir -p "$font_dir"
+    if [[ -f "$font_dir/HackNerdFont-Regular.ttf" ]]; then
+        print_warning "Hack Nerd Font already installed"
+    else
+        curl -fLo "$font_dir/Hack.zip" https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
+        unzip -o "$font_dir/Hack.zip" -d "$font_dir"
+        rm "$font_dir/Hack.zip"
+        fc-cache -fv
+        print_success "Installed Hack Nerd Font"
+    fi
+}
+
+# Install required packages (macOS via Homebrew)
 install_packages() {
+    if [[ "$OS" != "macos" ]]; then
+        return
+    fi
+
     print_info "Installing required packages..."
 
     local packages=(
@@ -326,10 +450,10 @@ main() {
     echo "╚════════════════════════════════════════════╝"
     echo ""
 
-    check_os
-    detect_arch
+    detect_platform
     install_homebrew
     install_packages
+    install_debian_packages
     backup_existing
     create_directories
     symlink_configs
