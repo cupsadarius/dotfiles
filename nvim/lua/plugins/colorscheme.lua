@@ -12,7 +12,7 @@ return {
         dark_variant = "moon",
       })
 
-      -- vim.cmd("colorscheme rose-pine")
+      vim.cmd("colorscheme rose-pine")
     end,
   },
   {
@@ -76,7 +76,7 @@ return {
       require("cyberdream").setup({
         transparent = true,
       })
-      vim.cmd("colorscheme cyberdream")
+      -- vim.cmd("colorscheme cyberdream")
     end,
   },
 }
