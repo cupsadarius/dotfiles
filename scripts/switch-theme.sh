@@ -117,8 +117,8 @@ update_fish_theme() {
     fi
 }
 
-# Update Ghostty theme
-update_ghostty_theme() {
+# Ghostty theme name for $THEME/$VARIANT (also the theme file Rex imports)
+ghostty_theme_name() {
     local theme_conf
     case "$THEME" in
         catppuccin)
@@ -157,6 +157,49 @@ update_ghostty_theme() {
             fi
             ;;
     esac
+    echo "$theme_conf"
+}
+
+# Update Rex: import the same Ghostty theme file into the running app and set
+# its light/dark mode. A re-import replaces the theme of the same name. Needs
+# Remote Control on in Rex > Settings > Rex Server; skipped when Rex is not open.
+update_rex_theme() {
+    local rex_bin
+    rex_bin=$(command -v rex 2>/dev/null) || rex_bin="$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex"
+    [[ -x "$rex_bin" ]] || return 0
+
+    local client
+    client=$("$rex_bin" --autostart=false client ls --json 2>/dev/null | jq -r '.clients[]? | select(.info.kind == "app") | .client_id' | head -n1)
+    if [[ -z "$client" ]]; then
+        print_info "Rex is not running, skipped"
+        return 0
+    fi
+
+    local name file dir
+    name=$(ghostty_theme_name)
+    for dir in "$CONFIG_DIR/ghostty/themes" "/Applications/Ghostty.app/Contents/Resources/ghostty/themes"; do
+        if [[ -f "$dir/$name" ]]; then
+            file="$dir/$name"
+            break
+        fi
+    done
+    if [[ -z "$file" ]]; then
+        print_error "Rex: no Ghostty theme file named '$name'"
+        return 0
+    fi
+
+    if "$rex_bin" -C "$client" do client.theme.import path="$file" >/dev/null &&
+        "$rex_bin" -C "$client" do client.appearance.switch_mode mode="$VARIANT" >/dev/null; then
+        print_success "Rex theme updated to $name"
+    else
+        print_error "Rex theme not updated (turn on Remote Control in Rex settings)"
+    fi
+}
+
+# Update Ghostty theme
+update_ghostty_theme() {
+    local theme_conf
+    theme_conf=$(ghostty_theme_name)
 
     local opacity
     if [[ "$VARIANT" == "light" ]]; then
@@ -447,17 +490,6 @@ update_fzf_theme() {
     fi
 }
 
-# Update OpenCode theme
-update_opencode_theme() {
-    local opencode_config="$CONFIG_DIR/opencode/opencode.json"
-
-    if [[ -f "$opencode_config" ]]; then
-        sed -i.bak "s/\"theme\": \".*\"/\"theme\": \"$THEME\"/" "$opencode_config"
-        rm -f "$opencode_config.bak"
-        print_success "OpenCode theme updated to $THEME"
-    fi
-}
-
 # Update Claude Code theme
 # Claude Code has no custom theme system — only built-in names. The `-ansi`
 # variants inherit the terminal's ANSI palette, so any of our terminal themes
@@ -699,11 +731,11 @@ main() {
     update_ghostty_theme
     update_tmux_theme
     update_herdr_theme
+    update_rex_theme
     update_bat_theme
     update_starship_theme
     update_fzf_theme
     update_neovim_theme
-    update_opencode_theme
     update_claude_theme
     save_theme_preference
 
@@ -716,7 +748,6 @@ main() {
     echo "  • Herdr: reloaded live if running, else applies on next launch"
     echo "  • FZF colors will apply immediately in new shell sessions"
     echo "  • Neovim: Restart Neovim to see the new colorscheme"
-    echo "  • OpenCode: Theme will apply on next launch"
     echo ""
 }
 

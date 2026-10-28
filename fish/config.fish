@@ -28,7 +28,6 @@ alias tls='tmux list-sessions'
 alias tns='tmux new-session -ds'
 alias lzd='lazydocker'
 alias s="fd --type f --strip-cwd-prefix --hidden --follow --exclude .git --exclude node_modules | fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' | xargs nvim"
-alias oo="opencode"
 
 # env variables
 export STARSHIP_CONFIG=$HOME/.config/starship/starship.toml
@@ -58,8 +57,6 @@ export PATH="$PATH:/opt/homebrew/bin"
 
 export BAT_THEME="Catppuccin Mocha"
 export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
-export K9SCONFIG="$HOME/.config/k9s"
-export K9S_CONFIG_PATH="$HOME/.config/k9s"
 export OLD_KUBECONFIG="./kubeconfig.yml"
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -94,3 +91,8 @@ end
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init2.fish 2>/dev/null || :
 
+# Rex puts its own `rex` first on PATH; the exports above reorder PATH, so
+# move it back to the front (https://www.superlogical.com/rex/docs/automate/cli).
+if set -q REX_BIN_DIR
+    fish_add_path --path --prepend --move $REX_BIN_DIR
+end
